@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Function to display resource information with jq for better output clarity
+display_resources_info() {
+    echo "----- $1 -----"
+    aws $2 $3 | jq .
+    echo "-----------------"
+}
+
+# Function to display EC2 instance information with jq for better output clarity
+display_ec2_info() {
+    echo "----- Running EC2 Instances -----"
+    aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -r '.Reservations[].Instances[] | .InstanceId'
+    echo "-----------------"
+}
+
+# Enable debugging with set -x
+set -x
+
+# Display S3 bucket information
+display_resources_info "S3 Buckets" s3 ls
+
+# Display IAM user information
+display_resources_info "IAM Users" iam list-users
+
+# Display running EC2 instances with only instance IDs
+display_ec2_info
+
+# Disable debugging with set +x
+set +x
